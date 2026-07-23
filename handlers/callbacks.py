@@ -1,7 +1,7 @@
 from maxapi.types import MessageCallback
 
 from handlers.catalog import CATALOG_SECTIONS
-from handlers.context import premise_service
+from handlers.context import document_service, premise_service
 from handlers.messages import send_catalog, start_application_form
 from keyboards.main_menu import main_keyboard
 from keyboards.premise_keyboard import premise_keyboard
@@ -10,7 +10,6 @@ from logger import logger
 from storage.search_cache import get_search_results
 
 STUB_RESPONSES = {
-    "documents": "📄 Документы подготовлены как файлы-заглушки в папке docs. Замените их на актуальные перед публикацией.",
     "contacts": "☎ Контакты АО «ТомскАгроИнвест» будут добавлены администратором бота.",
 }
 
@@ -28,6 +27,10 @@ def register_callback_handlers(dp, bot):
 
         if payload == "application":
             await start_application_form(bot, chat_id)
+            return
+
+        if payload == "documents":
+            await bot.send_message(chat_id=chat_id, text=document_service.format_documents(), attachments=[main_keyboard()])
             return
 
         if payload in CATALOG_SECTIONS:

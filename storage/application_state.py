@@ -17,3 +17,7 @@ def update_application(chat_id: int, key: str, value: str, next_step: str) -> No
 
 def clear_application(chat_id: int) -> None:
     APPLICATION_STATES.pop(chat_id, None)
+
+
+def clear_all_applications_state() -> None:
+    APPLICATION_STATES.clear()

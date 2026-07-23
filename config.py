@@ -6,7 +6,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
-DOCS_DIR = BASE_DIR / "docs"
+DOCS_DIR = BASE_DIR / "doc"
 PREMISES_FILE = DATA_DIR / "premises.csv"
 TRADE_PLACES_FILE = DATA_DIR / "trade_places.csv"
 SPECIAL_OFFERS_FILE = DATA_DIR / "special_offers.csv"

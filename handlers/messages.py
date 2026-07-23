@@ -9,7 +9,7 @@ from keyboards.premises_list import premises_list_keyboard
 from services.chat_cleanup_service import ChatCleanupService
 from services.search_service import SearchService
 from storage.application_state import clear_application, get_application, start_application, update_application
-from storage.search_cache import set_search_results
+from storage.search_cache import clear_search_results, set_search_results
 
 COMMAND_ROUTES = ("/start", "/menu", "/help", "/clear", "/archive", "/search")
 
@@ -31,7 +31,7 @@ def register_message_handlers(dp, bot):
         chat_id = event.chat.chat_id
         user_id = get_user_id(event)
 
-        if await continue_application_form(bot, chat_id, user_id, text):
+        if command not in COMMAND_ROUTES and await continue_application_form(bot, chat_id, user_id, text):
             return
 
         if command in {"/start", "/menu"}:
@@ -44,9 +44,11 @@ def register_message_handlers(dp, bot):
 
         if command == "/clear":
             deleted_count = await cleanup_service.clear_all_messages(chat_id)
+            clear_application(chat_id)
+            clear_search_results(chat_id)
             await bot.send_message(
                 chat_id=chat_id,
-                text=f"🧹 Чат очищен. Удалено сообщений: {deleted_count}.\n\nГлавное меню:",
+                text=f"{WELCOME_TEXT}\n\n🧹 Чат очищен. Удалено сообщений: {deleted_count}.",
                 attachments=[main_keyboard()],
             )
             return
@@ -118,8 +120,13 @@ async def continue_application_form(bot, chat_id: int, user_id: int | str, text:
         return True
 
     if step == "price":
-        update_application(chat_id, "price", text, "description")
-        await bot.send_message(chat_id=chat_id, text="Опишите задачу: тип помещения, сроки, контакт для связи:")
+        update_application(chat_id, "price", text, "phone")
+        await bot.send_message(chat_id=chat_id, text="Укажите телефон или другой контакт для связи:")
+        return True
+
+    if step == "phone":
+        update_application(chat_id, "phone", text, "description")
+        await bot.send_message(chat_id=chat_id, text="Опишите задачу: тип помещения, сроки и пожелания:")
         return True
 
     if step == "description":
@@ -127,12 +134,13 @@ async def continue_application_form(bot, chat_id: int, user_id: int | str, text:
             user_id=user_id,
             area=state.get("area", ""),
             price=state.get("price", ""),
+            phone=state.get("phone", ""),
             description=text,
         )
         clear_application(chat_id)
         await bot.send_message(
             chat_id=chat_id,
-            text="✅ Заявка сохранена. Менеджер свяжется с вами.",
+            text="✅ Заявка сохранена. Менеджер свяжется с вами по указанному контакту.",
             attachments=[main_keyboard()],
         )
         return True
