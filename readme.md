@@ -15,7 +15,7 @@
 - команда `/archive` для просмотра ранее поданных пользователем заявок;
 - форма обратной связи по кнопке «Подать заявку» с сохранением в `data/applications.csv`;
 - PDF-документы из папки `doc/` в разделе «Документы»;
-- заглушки для документов и контактов, чтобы меню v1 было цельным.
+- контакты из `data/contacts.csv`.
 
 ## Запуск
 
@@ -71,7 +71,21 @@
 
 - `data/trade_places.csv` — поля `tiitle`, `building`, `price`, `description`;
 - `data/special_offers.csv` — поля `tiitle`, `price`, `description`;
-- `data/applications.csv` — создаётся автоматически при первой заявке, поля `data`, `user_id`, `area`, `price`, `phone`, `description`; `user_id` нужен для команды `/archive`.
+- `data/applications.csv` — создаётся автоматически при первой заявке, поля `data`, `user_id`, `area`, `price`, `phone`, `description`; `user_id` нужен для команды `/archive`;
+- `data/contacts.csv` — контакты для кнопки «Контакты», поля `label`, `value`.
+
+## Контакты
+
+Контакты добавляются в `data/contacts.csv`. Формат файла:
+
+```csv
+label,value
+Телефон,+7 (3822) 00-00-00
+Email,info@tomskagroinvest.ru
+Адрес,"г. Томск, ул. Примерная, 1"
+```
+
+После изменения CSV перезапустите бота, если процесс уже был запущен.
 
 ## Документы
 

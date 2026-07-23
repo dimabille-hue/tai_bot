@@ -11,6 +11,7 @@ PREMISES_FILE = DATA_DIR / "premises.csv"
 TRADE_PLACES_FILE = DATA_DIR / "trade_places.csv"
 SPECIAL_OFFERS_FILE = DATA_DIR / "special_offers.csv"
 APPLICATIONS_FILE = DATA_DIR / "applications.csv"
+CONTACTS_FILE = DATA_DIR / "contacts.csv"
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 
 if not BOT_TOKEN:

@@ -1,7 +1,7 @@
 from maxapi.types import MessageCallback
 
 from handlers.catalog import CATALOG_SECTIONS
-from handlers.context import document_service, premise_service
+from handlers.context import contact_service, document_service, premise_service
 from handlers.messages import send_catalog, start_application_form
 from keyboards.main_menu import main_keyboard
 from keyboards.premise_keyboard import premise_keyboard
@@ -9,9 +9,6 @@ from keyboards.premises_list import premises_list_keyboard
 from logger import logger
 from storage.search_cache import get_search_results
 
-STUB_RESPONSES = {
-    "contacts": "☎ Контакты АО «ТомскАгроИнвест» будут добавлены администратором бота.",
-}
 
 
 def register_callback_handlers(dp, bot):
@@ -33,6 +30,10 @@ def register_callback_handlers(dp, bot):
             await bot.send_message(chat_id=chat_id, text=document_service.format_documents(), attachments=[main_keyboard()])
             return
 
+        if payload == "contacts":
+            await bot.send_message(chat_id=chat_id, text=contact_service.format_contacts(), attachments=[main_keyboard()])
+            return
+
         if payload in CATALOG_SECTIONS:
             await send_catalog(bot, chat_id, payload)
             return
@@ -51,10 +52,6 @@ def register_callback_handlers(dp, bot):
 
         if payload.startswith("apply_"):
             await start_application_form(bot, chat_id)
-            return
-
-        if payload in STUB_RESPONSES:
-            await bot.send_message(chat_id=chat_id, text=STUB_RESPONSES[payload])
             return
 
         logger.warning("Unknown callback payload: %s", payload)
