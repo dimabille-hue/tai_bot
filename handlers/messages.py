@@ -27,8 +27,9 @@ def register_message_handlers(dp, bot):
         text = get_message_text(event)
         command = text.lower()
         chat_id = event.chat.chat_id
+        user_id = get_user_id(event)
 
-        if await continue_application_form(bot, chat_id, text):
+        if await continue_application_form(bot, chat_id, user_id, text):
             return
 
         if command in {"/start", "/menu"}:
@@ -40,10 +41,18 @@ def register_message_handlers(dp, bot):
             return
 
         if command == "/clear":
-            deleted_count = await cleanup_service.clear_recent_messages(chat_id)
+            deleted_count = await cleanup_service.clear_all_messages(chat_id)
             await bot.send_message(
                 chat_id=chat_id,
-                text=f"🧹 Очистка завершена. Удалено сообщений: {deleted_count}.",
+                text=f"🧹 Чат очищен. Удалено сообщений: {deleted_count}.\n\nГлавное меню:",
+                attachments=[main_keyboard()],
+            )
+            return
+
+        if command == "/archive":
+            await bot.send_message(
+                chat_id=chat_id,
+                text=application_service.format_archive(user_id),
                 attachments=[main_keyboard()],
             )
             return
@@ -87,7 +96,7 @@ async def start_application_form(bot, chat_id: int) -> None:
     await bot.send_message(chat_id=chat_id, text="📝 Заявка на обратную связь\n\nУкажите желаемую площадь, м²:")
 
 
-async def continue_application_form(bot, chat_id: int, text: str) -> bool:
+async def continue_application_form(bot, chat_id: int, user_id: int | str, text: str) -> bool:
     state = get_application(chat_id)
     if not state:
         return False
@@ -105,6 +114,7 @@ async def continue_application_form(bot, chat_id: int, text: str) -> bool:
 
     if step == "description":
         application_service.save(
+            user_id=user_id,
             area=state.get("area", ""),
             price=state.get("price", ""),
             description=text,
@@ -119,3 +129,15 @@ async def continue_application_form(bot, chat_id: int, text: str) -> bool:
 
     clear_application(chat_id)
     return False
+
+
+def get_user_id(event: MessageCreated) -> int | str:
+    user = getattr(event, "user", None)
+    if user is not None:
+        return getattr(user, "user_id", None) or getattr(user, "id", None) or "unknown"
+
+    sender = getattr(event.message, "sender", None)
+    if sender is not None:
+        return getattr(sender, "user_id", None) or getattr(sender, "id", None) or "unknown"
+
+    return getattr(event.chat, "chat_id", "unknown")

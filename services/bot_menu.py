@@ -3,8 +3,9 @@ from maxapi.types.command import BotCommand
 BOT_COMMANDS = (
     BotCommand(name="start", description="Запустить бота"),
     BotCommand(name="menu", description="Открыть главное меню"),
-    BotCommand(name="clear", description="Очистить последние сообщения"),
+    BotCommand(name="clear", description="Очистить чат и открыть меню"),
     BotCommand(name="search", description="Поиск помещений"),
+    BotCommand(name="archive", description="Архив ваших заявок"),
     BotCommand(name="help", description="Показать подсказку"),
 )
 
