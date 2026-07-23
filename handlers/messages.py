@@ -11,6 +11,8 @@ from services.search_service import SearchService
 from storage.application_state import clear_application, get_application, start_application, update_application
 from storage.search_cache import set_search_results
 
+COMMAND_ROUTES = ("/start", "/menu", "/help", "/clear", "/archive", "/search")
+
 TEXT_TO_SECTION = {
     "🏢 Свободные помещения": "premises",
     "🛒 Свободные торговые места": "trade_places",
@@ -64,6 +66,14 @@ def register_message_handlers(dp, bot):
         section_key = TEXT_TO_SECTION.get(text)
         if section_key:
             await send_catalog(bot, chat_id, section_key)
+            return
+
+        if text:
+            await bot.send_message(
+                chat_id=chat_id,
+                text="Не понял команду. Откройте главное меню или используйте /help.",
+                attachments=[main_keyboard()],
+            )
 
 
 async def send_catalog(bot, chat_id: int, section_key: str, page: int = 0) -> None:
