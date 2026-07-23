@@ -4,6 +4,7 @@ BOT_COMMANDS = (
     BotCommand(name="start", description="Запустить бота"),
     BotCommand(name="menu", description="Открыть главное меню"),
     BotCommand(name="clear", description="Очистить последние сообщения"),
+    BotCommand(name="search", description="Поиск помещений"),
     BotCommand(name="help", description="Показать подсказку"),
 )
 
