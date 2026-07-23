@@ -22,4 +22,6 @@ class Premise:
 
     status: str
 
+    special_offer: bool = False
+
     photo: str = ""

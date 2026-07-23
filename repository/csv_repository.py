@@ -34,5 +34,6 @@ class CsvRepository:
             price=int(float(row.get("price") or 0)),
             description=row.get("description", ""),
             status=row.get("status", ""),
+            special_offer=row.get("special_offer", "").lower() in {"1", "true", "yes", "да"},
             photo=row.get("photo", ""),
         )

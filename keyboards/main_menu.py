@@ -17,6 +17,8 @@ def main_keyboard() -> Attachment:
     return keyboard(
         [
             [("🏢 Свободные помещения", "premises")],
+            [("🛒 Свободные торговые места", "trade_places")],
+            [("🔥 Специальные предложения", "special_offers")],
             [("📝 Подать заявку", "application")],
             [("📄 Документы", "documents")],
             [("☎ Контакты", "contacts")],
