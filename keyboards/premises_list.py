@@ -1,29 +1,26 @@
 from collections.abc import Iterable
 from math import ceil
+from typing import Any
 
 from maxapi.types import Attachment
 
 from keyboards.main_menu import keyboard
-from models.premise import Premise
 
 PAGE_SIZE = 5
 
 
 def premises_list_keyboard(
-    premises: Iterable[Premise],
+    items: Iterable[Any],
     section_key: str = "premises",
     page: int = 0,
     page_size: int = PAGE_SIZE,
 ) -> Attachment:
-    items = list(premises)
-    pages_count = max(1, ceil(len(items) / page_size))
+    catalog_items = list(items)
+    pages_count = max(1, ceil(len(catalog_items) / page_size))
     page = max(0, min(page, pages_count - 1))
-    page_items = items[page * page_size : (page + 1) * page_size]
+    page_items = catalog_items[page * page_size : (page + 1) * page_size]
 
-    buttons = [
-        [(f"{item.title} | {item.area:g} м² | {price_m2(item):g} ₽/м²", f"premise_{item.id}")]
-        for item in page_items
-    ]
+    buttons = [[(button_text(item), f"item_{section_key}_{item.id}")] for item in page_items]
 
     if pages_count > 1:
         nav = []
@@ -38,5 +35,17 @@ def premises_list_keyboard(
     return keyboard(buttons)
 
 
-def price_m2(premise: Premise) -> int:
-    return round(premise.price / premise.area) if premise.area else 0
+def button_text(item: Any) -> str:
+    title = getattr(item, "title", "Объект")
+    price = getattr(item, "price", 0)
+    area = getattr(item, "area", None)
+    special = "🔥 " if getattr(item, "special_offer", False) else ""
+    if area:
+        return f"{special}{title} | {area:g} м² | {price_m2(item):g} ₽/м²"
+    return f"{special}{title} | {price:,} ₽/мес".replace(",", " ")
+
+
+def price_m2(item: Any) -> int:
+    area = getattr(item, "area", 0)
+    price = getattr(item, "price", 0)
+    return round(price / area) if area else 0

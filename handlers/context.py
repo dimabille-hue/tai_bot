@@ -1,9 +1,14 @@
-from config import PREMISES_FILE
+from config import APPLICATIONS_FILE, PREMISES_FILE, SPECIAL_OFFERS_FILE, TRADE_PLACES_FILE
+from handlers.catalog import register_catalog_sections
 from repository.csv_repository import CsvRepository
+from repository.listing_csv_repository import ListingCsvRepository
+from services.application_service import ApplicationService
+from services.listing_service import ListingService
 from services.premise_service import PremiseService
 
 premise_service = PremiseService(CsvRepository(PREMISES_FILE))
+trade_place_service = ListingService(ListingCsvRepository(TRADE_PLACES_FILE))
+special_offer_service = ListingService(ListingCsvRepository(SPECIAL_OFFERS_FILE))
+application_service = ApplicationService(APPLICATIONS_FILE)
 
-from handlers.catalog import register_catalog_sections
-
-register_catalog_sections(premise_service)
+register_catalog_sections(premise_service, trade_place_service, special_offer_service)

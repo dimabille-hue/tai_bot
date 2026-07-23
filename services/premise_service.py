@@ -20,8 +20,9 @@ class PremiseService:
         return self.repository.get_by_id(premise_id)
 
     def format_card(self, premise: Premise) -> str:
+        prefix = "🔥🔥 СПЕЦПРЕДЛОЖЕНИЕ 🔥🔥\n" if premise.special_offer else ""
         rows = [
-            f"🏢 {premise.title}",
+            f"{prefix}🏢 {premise.title}",
             "",
             f"📐 {premise.area:g} м²",
             f"💰 {premise.price:,} ₽/мес".replace(",", " "),
@@ -50,8 +51,8 @@ class PremiseService:
         lines = [title, ""]
         for item in premises:
             price = f"{item.price:,}".replace(",", " ")
-            marker = " 🔥" if item.special_offer else ""
-            lines.append(f"{item.id}. {item.title}{marker} — {item.area:g} м², {price} ₽/мес")
+            marker = "🔥 " if item.special_offer else ""
+            lines.append(f"{item.id}. {marker}{item.title} — {item.area:g} м², {price} ₽/мес")
         return "\n".join(lines)
 
     def count_free(self) -> int:
