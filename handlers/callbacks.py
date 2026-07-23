@@ -3,6 +3,7 @@ from maxapi.types import MessageCallback
 from handlers.catalog import CATALOG_SECTIONS
 from handlers.context import contact_service, document_service, premise_service
 from handlers.messages import send_catalog, start_application_form
+from keyboards.documents import documents_keyboard
 from keyboards.main_menu import main_keyboard
 from keyboards.premise_keyboard import premise_keyboard
 from keyboards.premises_list import premises_list_keyboard
@@ -27,7 +28,16 @@ def register_callback_handlers(dp, bot):
             return
 
         if payload == "documents":
-            await bot.send_message(chat_id=chat_id, text=document_service.format_documents(), attachments=[main_keyboard()])
+            documents = document_service.list_documents()
+            await bot.send_message(
+                chat_id=chat_id,
+                text=document_service.format_documents(),
+                attachments=[documents_keyboard(documents)] if documents else [main_keyboard()],
+            )
+            return
+
+        if payload.startswith("document_"):
+            await send_document(bot, chat_id, payload.removeprefix("document_"))
             return
 
         if payload == "contacts":
@@ -124,3 +134,15 @@ async def send_premise_card(bot, chat_id: int, raw_id: str) -> None:
         text=premise_service.format_card(premise),
         attachments=[premise_keyboard(premise.id)],
     )
+
+
+async def send_document(bot, chat_id: int, raw_index: str) -> None:
+    try:
+        index = int(raw_index)
+    except ValueError:
+        await bot.send_message(chat_id=chat_id, text="Документ не найден.", attachments=[main_keyboard()])
+        return
+
+    sent = await document_service.send_document(bot, chat_id, index)
+    if not sent:
+        await bot.send_message(chat_id=chat_id, text="Документ не найден или был удалён.", attachments=[main_keyboard()])
